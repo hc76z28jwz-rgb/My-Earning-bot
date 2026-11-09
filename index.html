@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101827"><meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.webmanifest"><title>AI Earning Bot 2.0</title>
+<style>
+:root{--bg:#f3f5f8;--card:#fff;--ink:#172033;--muted:#64748b;--line:#e2e8f0;--accent:#1d4ed8;--green:#087443}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding-bottom:calc(24px + env(safe-area-inset-bottom))}
+header{background:#101827;color:white;padding:22px 17px 18px;padding-top:calc(20px + env(safe-area-inset-top));position:sticky;top:0;z-index:5}
+h1{font-size:22px;margin:0 0 4px}.sub{color:#cbd5e1;font-size:12px}.wrap{max-width:760px;margin:auto;padding:12px}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin:8px 0 12px}.stat,.panel{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:14px}
+.stat strong{display:block;font-size:25px;margin-top:4px}.muted{color:var(--muted);font-size:12px}
+nav{display:flex;gap:7px;overflow:auto;padding:10px 0 3px}nav button{white-space:nowrap;border-radius:30px;padding:9px 13px;background:#263247;color:white;border:1px solid #475569}
+nav button.active{background:white;color:#101827}
+h2{font-size:17px;margin:0 0 12px}.panel{margin:10px 0}.stack{display:grid;gap:9px}
+label{display:block;font-size:12px;color:var(--muted);margin:5px 0}
+input,select,textarea{width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;background:white;font:inherit;color:var(--ink)}
+textarea{min-height:65px}button,.btn{border:0;border-radius:10px;padding:11px 13px;background:var(--accent);color:white;font:inherit;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block;text-align:center}
+button.secondary,.btn.secondary{background:#e8eefc;color:#1e40af}button.danger{background:#fee2e2;color:#991b1b}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.row>*{flex:1}.task{border-top:1px solid var(--line);padding:12px 0}.task:first-child{border:0}
+.task strong{display:block}.task .meta{font-size:12px;color:var(--muted);margin:4px 0 8px}
+.pill{font-size:11px;background:#edf2f7;border-radius:20px;padding:4px 8px;display:inline-block}
+.provider{padding:11px 0;border-top:1px solid var(--line)}.provider:first-child{border:0}
+.hidden{display:none!important}.notice{background:#fff7ed;border:1px solid #fed7aa;padding:12px;border-radius:12px;font-size:13px;line-height:1.45}
+.ok{color:var(--green)}.small{font-size:12px}.empty{color:var(--muted);padding:15px 0}
+footer{text-align:center;color:var(--muted);font-size:11px;padding:15px}
+</style></head>
+<body>
+<header><h1>AI Earning Bot 2.0</h1><div class="sub">Local-first opportunity finder · Jamaica profile · Manual withdrawals</div>
+<nav>
+<button class="active" data-tab="home">Overview</button><button data-tab="discover">Find tasks</button><button data-tab="tasks">My tasks</button><button data-tab="money">Earnings</button><button data-tab="settings">Settings</button>
+</nav></header>
+<main class="wrap">
+<section id="home" class="tab">
+<div class="notice"><b>Location accuracy:</b> This app is configured for a person residing in Jamaica. Do not select United States residency or use a VPN to qualify for US-only surveys. Provider availability and payout methods must be confirmed inside your own account.</div>
+<div class="stats">
+<div class="stat"><span class="muted">Approved earnings</span><strong id="approved">$0.00</strong></div>
+<div class="stat"><span class="muted">Pending rewards</span><strong id="pending">$0.00</strong></div>
+<div class="stat"><span class="muted">Tasks recorded</span><strong id="taskcount">0</strong></div>
+<div class="stat"><span class="muted">Withdrawals logged</span><strong id="withdrawn">$0.00</strong></div>
+</div>
+<div class="panel"><h2>Today's workflow</h2>
+<div class="stack">
+<button onclick="showTab('discover')">1 · Browse legitimate providers</button>
+<button class="secondary" onclick="showTab('tasks')">2 · Add and track opportunities</button>
+<button class="secondary" onclick="showTab('money')">3 · Record rewards and withdrawals</button>
+</div></div>
+<div class="panel"><h2>Latest tasks</h2><div id="recent"></div></div>
+</section>
+
+<section id="discover" class="tab hidden">
+<div class="panel"><h2>Provider directory</h2><p class="muted">These are official starting points, not guarantees of task availability, eligibility or payout in Jamaica.</p><div id="providers"></div></div>
+<div class="panel"><h2>Search checklist</h2>
+<p class="small">Use the official provider pages below. Before spending time, verify: Jamaica accepted, reward is at least US$1, estimated duration, minimum cash-out, payment method available to your account, and automation rules.</p>
+<button onclick="copyText('Jamaica resident. Please confirm current participant eligibility, available tasks, minimum withdrawal threshold, and payout methods for my account.')">Copy eligibility questions</button>
+</div>
+</section>
+
+<section id="tasks" class="tab hidden">
+<div class="panel"><h2>Add an opportunity</h2>
+<form id="taskform" class="stack">
+<div><label>Task name</label><input name="title" required placeholder="e.g. Product feedback study"></div>
+<div class="row"><div><label>Provider</label><input name="provider" required placeholder="Provider name"></div><div><label>Reward (USD)</label><input name="reward" type="number" min="0" step=".01" required placeholder="1.00"></div></div>
+<div class="row"><div><label>Task type</label><select name="category"><option>Survey</option><option>AI training</option><option>Website testing</option><option>Simple online task</option><option>Data entry</option><option>Product research</option><option>Research study</option><option>Other</option></select></div><div><label>Estimated minutes</label><input name="minutes" type="number" min="0" value="10"></div></div>
+<div><label>Official task URL</label><input name="url" type="url" placeholder="https://..."></div>
+<div><label>Notes / eligibility / payment details</label><textarea name="notes" placeholder="Confirm Jamaica eligibility and payout terms"></textarea></div>
+<button type="submit">Save opportunity</button></form></div>
+<div class="panel"><h2>Saved opportunities</h2><div id="tasklist"></div></div>
+</section>
+
+<section id="money" class="tab hidden">
+<div class="panel"><h2>Record a reward</h2><form id="earnform" class="stack">
+<div><label>Amount (USD)</label><input name="amount" type="number" min=".01" step=".01" required></div>
+<div><label>Status</label><select name="status"><option>Pending</option><option>Approved</option></select></div>
+<div><label>Provider / reference</label><input name="note" placeholder="Provider and confirmation reference"></div>
+<button type="submit">Record reward</button></form></div>
+<div class="panel"><h2>Log a manual withdrawal</h2><p class="muted">Withdraw through the provider's official payment page first. This app only records it; it does not move money.</p>
+<form id="withdrawform" class="stack"><div><label>Amount withdrawn (USD)</label><input name="amount" type="number" min=".01" step=".01" required></div>
+<div><label>Destination (no account numbers)</label><select name="destination"><option>PayPal</option><option>Payoneer</option><option>Jamaican bank transfer</option><option>Other provider-supported method</option></select></div>
+<button type="submit">Log withdrawal</button></form></div>
+<div class="panel"><h2>Ledger</h2><div id="ledger"></div></div>
+</section>
+
+<section id="settings" class="tab hidden">
+<div class="panel"><h2>Your profile</h2><div class="notice">Country of residence: <b>Jamaica</b>. The US is not a valid participant location unless you genuinely relocate and meet the provider's residence and verification requirements.</div>
+<label>Minimum reward filter (USD)</label><input id="minreward" type="number" min="0" step=".25" value="1">
+<label>Daily discovery goal (opportunities, not guaranteed completed surveys)</label><input id="dailygoal" type="number" min="1" value="100">
+<button onclick="saveSettings()">Save settings</button></div>
+<div class="panel"><h2>Backup / restore</h2><div class="row"><button onclick="exportData()">Export backup</button><button class="secondary" onclick="document.getElementById('importfile').click()">Import backup</button><input id="importfile" type="file" accept="application/json" class="hidden"></div>
+<p class="muted">Your records stay in this browser on this device. Clearing Safari website data may erase them. Export backups regularly.</p></div>
+<div class="panel"><h2>Privacy and limitations</h2><ul class="small"><li>No bank credentials, card numbers, passwords or one-time codes are stored.</li><li>No automatic survey answers, fake profiles, CAPTCHA bypass, or account farming.</li><li>Automatic task completion is only suitable when a provider expressly authorizes it through documented APIs or terms.</li><li>iOS does not allow a normal web app to run continuous background scans 24/7. Open this app to refresh and review opportunities.</li></ul></div>
+</section>
+<footer>AI Earning Bot 2.0 · Local browser storage · No guaranteed income</footer>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const load=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}};
+const save=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+let tasks=load('aeb_tasks',[]), earnings=load('aeb_earnings',[]), withdrawals=load('aeb_withdrawals',[]);
+let settings=load('aeb_settings',{min:1,goal:100});
+const providers=[
+{name:'Pollrouter Jamaica',type:'Surveys',url:'https://pollrouter.com/en-jm/',note:'Jamaica-specific landing page. Confirm available surveys and reward redemption after registration.'},
+{name:'Clickworker',type:'Microtasks / data',url:'https://www.clickworker.com/',note:'Country and payment methods are account-dependent. Check your payment settings before working.'},
+{name:'UserTesting',type:'Website testing',url:'https://www.usertesting.com/get-paid-to-test',note:'Check current country eligibility and payment requirements. Participate personally and honestly.'},
+{name:'Mirats Rewards',type:'Research / surveys',url:'https://rewards.mirats.app/en-jm/faq',note:'Jamaica FAQ page; confirm live registration and current redemption choices.'},
+{name:'ySense',type:'Surveys / offers',url:'https://www.ysense.com/',note:'Check whether Jamaica registration, offers and cash-out options are currently supported.'}
+];
+function showTab(id){document.querySelectorAll('.tab').forEach(x=>x.classList.add('hidden'));$(id).classList.remove('hidden');document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));render()}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
+function money(n){return '$'+Number(n||0).toFixed(2)}
+function render(){
+let approved=earnings.filter(x=>x.status==='Approved').reduce((a,x)=>a+x.amount,0), pending=earnings.filter(x=>x.status==='Pending').reduce((a,x)=>a+x.amount,0), withdrawn=withdrawals.reduce((a,x)=>a+x.amount,0);
+$('approved').textContent=money(approved);$('pending').textContent=money(pending);$('withdrawn').textContent=money(withdrawn);$('taskcount').textContent=tasks.length;
+const taskHtml=t=>`<div class="task"><strong>${safe(t.title)} <span class="pill">${safe(t.category)}</span></strong><div class="meta">${safe(t.provider)} · ${money(t.reward)} · ${t.minutes||0} min · ${safe(t.status||'Found')}</div>${t.url?`<a href="${safeAttr(t.url)}" target="_blank" rel="noopener">Open official task ↗</a>`:''}<div class="row" style="margin-top:8px"><button class="secondary" onclick="markTask(${t.id},'Completed')">Mark completed</button><button class="secondary" onclick="markTask(${t.id},'Rejected / screened out')">Screened out</button><button class="danger" onclick="deleteTask(${t.id})">Delete</button></div></div>`;
+$('tasklist').innerHTML=tasks.length?tasks.slice().reverse().map(taskHtml).join(''):'<div class="empty">No tasks saved yet.</div>';
+$('recent').innerHTML=tasks.length?tasks.slice(-3).reverse().map(t=>`<div class="task"><strong>${safe(t.title)}</strong><div class="meta">${safe(t.provider)} · ${money(t.reward)}</div></div>`).join(''):'<div class="empty">Add your first opportunity from Find tasks.</div>';
+$('providers').innerHTML=providers.map(p=>`<div class="provider"><b>${safe(p.name)}</b> <span class="pill">${safe(p.type)}</span><p class="muted">${safe(p.note)}</p><a href="${p.url}" target="_blank" rel="noopener">Visit official website ↗</a></div>`).join('');
+$('ledger').innerHTML=[...earnings.map(x=>({kind:'Reward · '+x.status,amount:x.amount,note:x.note,date:x.date})),...withdrawals.map(x=>({kind:'Withdrawal · '+x.destination,amount:-x.amount,note:x.note,date:x.date}))].sort((a,b)=>b.date.localeCompare(a.date)).map(x=>`<div class="task"><b>${safe(x.kind)}: ${money(x.amount)}</b><div class="meta">${safe(x.note||'')} · ${new Date(x.date).toLocaleString()}</div></div>`).join('')||'<div class="empty">No ledger entries.</div>';
+$('minreward').value=settings.min;$('dailygoal').value=settings.goal;
+}
+function safe(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function safeAttr(s){return safe(s)}
+$('taskform').onsubmit=e=>{e.preventDefault();let f=new FormData(e.target),t=Object.fromEntries(f.entries());t.id=Date.now();t.reward=Number(t.reward);t.minutes=Number(t.minutes);t.status='Found';t.date=new Date().toISOString();tasks.push(t);save('aeb_tasks',tasks);e.target.reset();render();showTab('tasks')};
+function markTask(id,status){let t=tasks.find(x=>x.id===id);if(t){t.status=status;save('aeb_tasks',tasks);render()}}
+function deleteTask(id){if(confirm('Delete this task record?')){tasks=tasks.filter(x=>x.id!==id);save('aeb_tasks',tasks);render()}}
+$('earnform').onsubmit=e=>{e.preventDefault();let f=new FormData(e.target);earnings.push({amount:Number(f.get('amount')),status:f.get('status'),note:f.get('note'),date:new Date().toISOString()});save('aeb_earnings',earnings);e.target.reset();render();alert('Reward recorded.')};
+$('withdrawform').onsubmit=e=>{e.preventDefault();let f=new FormData(e.target);withdrawals.push({amount:Number(f.get('amount')),destination:f.get('destination'),note:'Manually withdrawn by user',date:new Date().toISOString()});save('aeb_withdrawals',withdrawals);e.target.reset();render();alert('Withdrawal logged. The transfer itself is not performed by this app.')};
+function saveSettings(){settings={min:Number($('minreward').value),goal:Number($('dailygoal').value)};save('aeb_settings',settings);alert('Settings saved.')}
+function exportData(){let data={tasks,earnings,withdrawals,settings,exportedAt:new Date().toISOString()};let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.download='earning-bot-backup.json';a.click();URL.revokeObjectURL(a.href)}
+$('importfile').onchange=async e=>{let f=e.target.files[0];if(!f)return;try{let d=JSON.parse(await f.text());tasks=d.tasks||[];earnings=d.earnings||[];withdrawals=d.withdrawals||[];settings=d.settings||settings;save('aeb_tasks',tasks);save('aeb_earnings',earnings);save('aeb_withdrawals',withdrawals);save('aeb_settings',settings);render();alert('Backup restored.')}catch{alert('Invalid backup file.')}};
+function copyText(s){navigator.clipboard?.writeText(s).then(()=>alert('Copied')).catch(()=>alert(s))}
+if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
+render();
+</script></body></html>
